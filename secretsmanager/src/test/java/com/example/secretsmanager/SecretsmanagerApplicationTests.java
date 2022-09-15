@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -17,8 +19,10 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = {"spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
 				"spring.cloud.aws.region.static=us-east-1", "spring.config.import=aws-secretsmanager:/spring/secret/text"})
+@Testcontainers
 class SecretsmanagerApplicationTests {
 
+	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.1.0"))
 			.withServices(LocalStackContainer.Service.SECRETSMANAGER);
 
@@ -29,7 +33,6 @@ class SecretsmanagerApplicationTests {
 
 	@BeforeAll
 	static void beforeAll() throws IOException, InterruptedException {
-		localstack.start();
 		System.setProperty("spring.cloud.aws.secretsmanager.endpoint",
 				localstack.getEndpointOverride(SECRETSMANAGER).toString());
 		System.setProperty("spring.cloud.aws.secretsmanager.region", localstack.getRegion());
@@ -39,9 +42,6 @@ class SecretsmanagerApplicationTests {
 
 	@AfterAll
 	static void afterAll() {
-		if (localstack != null) {
-			localstack.stop();
-		}
 		System.clearProperty("spring.cloud.aws.secretsmanager.endpoint");
 		System.clearProperty("spring.cloud.aws.secretsmanager.region");
 	}

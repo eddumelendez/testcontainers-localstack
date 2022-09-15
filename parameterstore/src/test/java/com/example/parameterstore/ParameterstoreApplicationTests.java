@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
@@ -18,8 +20,10 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
         properties = {"spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
                 "spring.cloud.aws.region.static=us-east-1", "spring.config.import=aws-parameterstore:/spring/config/"})
+@Testcontainers
 class ParameterstoreApplicationTests {
 
+    @Container
     private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.1.0"))
             .withServices(LocalStackContainer.Service.SSM);
 
@@ -28,7 +32,6 @@ class ParameterstoreApplicationTests {
 
     @BeforeAll
     static void beforeAll() throws IOException, InterruptedException {
-        localstack.start();
         System.setProperty("spring.cloud.aws.parameterstore.endpoint",
                 localstack.getEndpointOverride(SSM).toString());
         System.setProperty("spring.cloud.aws.parameterstore.region", localstack.getRegion());
@@ -38,9 +41,6 @@ class ParameterstoreApplicationTests {
 
     @AfterAll
     static void afterAll() {
-        if (localstack != null) {
-            localstack.stop();
-        }
         System.clearProperty("spring.cloud.aws.parameterstore.endpoint");
         System.clearProperty("spring.cloud.aws.parameterstore.region");
     }
