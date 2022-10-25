@@ -3,7 +3,7 @@ package com.example.cloudwatch;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.actuate.metrics.AutoConfigureMetrics;
+import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -14,13 +14,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
-import software.amazon.awssdk.services.cloudwatch.model.Dimension;
-import software.amazon.awssdk.services.cloudwatch.model.GetMetricDataRequest;
-import software.amazon.awssdk.services.cloudwatch.model.GetMetricDataResponse;
-import software.amazon.awssdk.services.cloudwatch.model.Metric;
-import software.amazon.awssdk.services.cloudwatch.model.MetricDataQuery;
-import software.amazon.awssdk.services.cloudwatch.model.MetricStat;
-import software.amazon.awssdk.services.cloudwatch.model.StandardUnit;
+import software.amazon.awssdk.services.cloudwatch.model.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -35,7 +29,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
                 "spring.cloud.aws.region.static=us-east-1", "management.metrics.export.cloudwatch.namespace=tc-localstack",
                 "management.metrics.export.cloudwatch.step=5s",
                 "management.metrics.enable.all=false", "management.metrics.enable.http=true"})
-@AutoConfigureMetrics
+@AutoConfigureObservability
 @Testcontainers
 class CloudwatchApplicationTests {
 
@@ -67,13 +61,14 @@ class CloudwatchApplicationTests {
                     .body(equalTo("Hello World"));
         }
 
-        Dimension exception = Dimension.builder().name("exception").value("None").build();
+        Dimension error = Dimension.builder().name("error").value("none").build();
+        Dimension exception = Dimension.builder().name("exception").value("none").build();
         Dimension method = Dimension.builder().name("method").value("GET").build();
         Dimension outcome = Dimension.builder().name("outcome").value("SUCCESS").build();
         Dimension uri = Dimension.builder().name("uri").value("/greetings").build();
         Dimension status = Dimension.builder().name("status").value("200").build();
         Metric metric = Metric.builder().namespace("tc-localstack").metricName("http.server.requests.count")
-                .dimensions(exception, method, outcome, uri, status).build();
+                .dimensions(error, exception, method, outcome, uri, status).build();
         MetricStat metricStat = MetricStat.builder().stat("Maximum").metric(metric).unit(StandardUnit.COUNT).period(5)
                 .build();
         MetricDataQuery metricDataQuery = MetricDataQuery.builder().metricStat(metricStat).id("test1").returnData(true)
