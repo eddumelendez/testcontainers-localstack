@@ -34,7 +34,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 class CloudwatchApplicationTests {
 
     @Container
-    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.1.0")).withServices(LocalStackContainer.Service.CLOUDWATCH);
+    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.2.0")).withServices(LocalStackContainer.Service.CLOUDWATCH);
 
     @Autowired
     private CloudWatchAsyncClient cloudWatchAsyncClient;

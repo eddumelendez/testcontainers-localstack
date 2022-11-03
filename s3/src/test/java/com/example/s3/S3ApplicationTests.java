@@ -27,7 +27,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 class S3ApplicationTests {
 
 	@Container
-	private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.1.0"))
+	private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.2.0"))
 			.withServices(LocalStackContainer.Service.S3);
 
 	@Autowired
