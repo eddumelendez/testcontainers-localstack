@@ -21,13 +21,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = {"spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-				"spring.cloud.aws.region.static=us-east-1"})
+		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
+				"spring.cloud.aws.region.static=us-east-1" })
 @Testcontainers
 class S3ApplicationTests {
 
 	@Container
-	private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.0.0"));
+	private static LocalStackContainer localstack = new LocalStackContainer(
+			DockerImageName.parse("localstack/localstack:2.0.0"));
 
 	@Autowired
 	private S3Template s3Template;
@@ -37,14 +38,14 @@ class S3ApplicationTests {
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.s3.endpoint",
-				() -> localstack.getEndpointOverride(S3).toString());
+		registry.add("spring.cloud.aws.s3.endpoint", () -> localstack.getEndpointOverride(S3).toString());
 		registry.add("spring.cloud.aws.s3.region", localstack::getRegion);
 	}
 
 	@BeforeAll
 	static void beforeAll() throws IOException, InterruptedException {
-		localstack.execInContainer("awslocal", "s3api", "create-bucket", "--bucket", "conferences", "--region", localstack.getRegion());
+		localstack.execInContainer("awslocal", "s3api", "create-bucket", "--bucket", "conferences", "--region",
+				localstack.getRegion());
 	}
 
 	@Test
@@ -52,14 +53,16 @@ class S3ApplicationTests {
 		assertThat(this.s3Client.listBuckets().buckets()).hasSize(1);
 
 		this.s3Template.store("conferences", "javaone.txt", "Las Vegas");
-		ListObjectsV2Response listConferencesObjectsV2Response = this.s3Client.listObjectsV2(ListObjectsV2Request.builder().bucket("conferences").build());
+		ListObjectsV2Response listConferencesObjectsV2Response = this.s3Client
+				.listObjectsV2(ListObjectsV2Request.builder().bucket("conferences").build());
 		assertThat(listConferencesObjectsV2Response.contents()).hasSize(1);
 
 		this.s3Template.createBucket("talks");
 		assertThat(this.s3Client.listBuckets().buckets()).hasSize(2);
 
 		this.s3Template.store("talks", "Adopting Testcontainers for local development.txt", "Oleg Šelajev");
-		ListObjectsV2Response listTalksObjectsV2Response = this.s3Client.listObjectsV2(ListObjectsV2Request.builder().bucket("talks").build());
+		ListObjectsV2Response listTalksObjectsV2Response = this.s3Client
+				.listObjectsV2(ListObjectsV2Request.builder().bucket("talks").build());
 		assertThat(listTalksObjectsV2Response.contents()).hasSize(1);
 	}
 

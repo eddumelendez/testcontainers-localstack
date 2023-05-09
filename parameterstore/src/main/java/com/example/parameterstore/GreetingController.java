@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GreetingController {
 
-    @Value("${text}")
-    private String text;
+	@Value("${text}")
+	private String text;
 
-    @GetMapping("/greetings")
-    public String greeting() {
-        return this.text;
-    }
+	@GetMapping("/greetings")
+	public String greeting() {
+		return this.text;
+	}
+
 }

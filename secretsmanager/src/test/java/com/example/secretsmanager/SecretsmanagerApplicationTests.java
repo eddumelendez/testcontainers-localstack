@@ -17,13 +17,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SECRETSMANAGER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = {"spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-				"spring.cloud.aws.region.static=us-east-1", "spring.config.import=aws-secretsmanager:/spring/secret/text"})
+		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
+				"spring.cloud.aws.region.static=us-east-1",
+				"spring.config.import=aws-secretsmanager:/spring/secret/text" })
 @Testcontainers
 class SecretsmanagerApplicationTests {
 
 	@Container
-	private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.0.0"));
+	private static LocalStackContainer localstack = new LocalStackContainer(
+			DockerImageName.parse("localstack/localstack:2.0.0"));
 
 	@LocalServerPort
 	private int localPort;
@@ -36,7 +38,8 @@ class SecretsmanagerApplicationTests {
 				localstack.getEndpointOverride(SECRETSMANAGER).toString());
 		System.setProperty("spring.cloud.aws.secretsmanager.region", localstack.getRegion());
 
-		localstack.execInContainer("awslocal", "secretsmanager", "create-secret", "--name", "/spring/secret/text", "--secret-string", text, "--region", localstack.getRegion());
+		localstack.execInContainer("awslocal", "secretsmanager", "create-secret", "--name", "/spring/secret/text",
+				"--secret-string", text, "--region", localstack.getRegion());
 	}
 
 	@AfterAll
@@ -47,11 +50,7 @@ class SecretsmanagerApplicationTests {
 
 	@Test
 	void contextLoads() {
-		RestAssured.given().port(this.localPort)
-				.get("/greetings")
-				.then()
-				.assertThat()
-				.body(equalTo(text));
+		RestAssured.given().port(this.localPort).get("/greetings").then().assertThat().body(equalTo(text));
 	}
 
 }

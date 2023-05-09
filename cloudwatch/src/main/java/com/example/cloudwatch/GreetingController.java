@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/greetings")
 public class GreetingController {
 
-    @GetMapping
-    public String greetings() {
-        return "Hello World";
-    }
+	@GetMapping
+	public String greetings() {
+		return "Hello World";
+	}
 
-    @GetMapping("/{name}")
-    public String greetings(@PathVariable String name) {
-        return "Hello " + name;
-    }
+	@GetMapping("/{name}")
+	public String greetings(@PathVariable String name) {
+		return "Hello " + name;
+	}
 
 }
