@@ -24,8 +24,7 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 class ParameterstoreApplicationTests {
 
     @Container
-    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.2.0"))
-            .withServices(LocalStackContainer.Service.SSM);
+    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.0.0"));
 
     @LocalServerPort
     private int localPort;

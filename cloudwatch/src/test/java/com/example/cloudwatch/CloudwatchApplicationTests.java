@@ -26,15 +26,15 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
         properties = {"spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-                "spring.cloud.aws.region.static=us-east-1", "management.metrics.export.cloudwatch.namespace=tc-localstack",
-                "management.metrics.export.cloudwatch.step=5s",
+                "spring.cloud.aws.region.static=us-east-1", "management.cloudwatch.metrics.export.namespace=tc-localstack",
+                "management.cloudwatch.metrics.export.step=5s",
                 "management.metrics.enable.all=false", "management.metrics.enable.http=true"})
-@AutoConfigureObservability
+@AutoConfigureObservability(tracing = false)
 @Testcontainers
 class CloudwatchApplicationTests {
 
     @Container
-    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:1.2.0")).withServices(LocalStackContainer.Service.CLOUDWATCH);
+    private static LocalStackContainer localstack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:2.0.0"));
 
     @Autowired
     private CloudWatchAsyncClient cloudWatchAsyncClient;
@@ -77,7 +77,7 @@ class CloudwatchApplicationTests {
             GetMetricDataResponse response = this.cloudWatchAsyncClient.getMetricData(GetMetricDataRequest.builder()
                     .startTime(startTime).endTime(endTime).metricDataQueries(metricDataQuery).build()).get();
             assertThat(response.metricDataResults()).hasSize(1);
-            assertThat(response.metricDataResults().get(0).label()).isEqualTo("http.server.requests.count Maximum");
+            assertThat(response.metricDataResults().get(0).label()).isEqualTo("http.server.requests.count");
             assertThat(response.metricDataResults().get(0).values()).contains(5d);
         });
     }
