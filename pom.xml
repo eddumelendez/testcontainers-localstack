@@ -15,6 +15,7 @@
         <module>parameterstore</module>
         <module>s3</module>
         <module>secretsmanager</module>
+        <module>sqs</module>
     </modules>
 
     <build>
