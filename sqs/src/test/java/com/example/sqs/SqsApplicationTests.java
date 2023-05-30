@@ -32,8 +32,7 @@ class SqsApplicationTests {
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.sqs.endpoint",
-				() -> localStackContainer.getEndpointOverride(LocalStackContainer.Service.SQS).toString());
+		registry.add("spring.cloud.aws.sqs.endpoint", () -> localStackContainer.getEndpoint().toString());
 	}
 
 	@Autowired

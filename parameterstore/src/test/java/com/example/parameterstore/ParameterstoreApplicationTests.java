@@ -15,7 +15,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SSM;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
@@ -32,7 +31,7 @@ class ParameterstoreApplicationTests {
 
 	@BeforeAll
 	static void beforeAll() throws IOException, InterruptedException {
-		System.setProperty("spring.cloud.aws.parameterstore.endpoint", localstack.getEndpointOverride(SSM).toString());
+		System.setProperty("spring.cloud.aws.parameterstore.endpoint", localstack.getEndpoint().toString());
 		System.setProperty("spring.cloud.aws.parameterstore.region", localstack.getRegion());
 
 		localstack.execInContainer("awslocal", "ssm", "put-parameter", "--name", "/spring/config/text", "--value",

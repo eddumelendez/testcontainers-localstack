@@ -14,7 +14,6 @@ import org.testcontainers.utility.DockerImageName;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.SECRETSMANAGER;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
@@ -34,8 +33,7 @@ class SecretsmanagerApplicationTests {
 
 	@BeforeAll
 	static void beforeAll() throws IOException, InterruptedException {
-		System.setProperty("spring.cloud.aws.secretsmanager.endpoint",
-				localstack.getEndpointOverride(SECRETSMANAGER).toString());
+		System.setProperty("spring.cloud.aws.secretsmanager.endpoint", localstack.getEndpoint().toString());
 		System.setProperty("spring.cloud.aws.secretsmanager.region", localstack.getRegion());
 
 		localstack.execInContainer("awslocal", "secretsmanager", "create-secret", "--name", "/spring/secret/text",

@@ -18,7 +18,6 @@ import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
@@ -38,7 +37,7 @@ class S3ApplicationTests {
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.s3.endpoint", () -> localstack.getEndpointOverride(S3).toString());
+		registry.add("spring.cloud.aws.s3.endpoint", () -> localstack.getEndpoint().toString());
 		registry.add("spring.cloud.aws.s3.region", localstack::getRegion);
 	}
 

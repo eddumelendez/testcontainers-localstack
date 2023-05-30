@@ -22,7 +22,6 @@ import java.time.Instant;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.testcontainers.containers.localstack.LocalStackContainer.Service.CLOUDWATCH;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
@@ -46,8 +45,7 @@ class CloudwatchApplicationTests {
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.cloudwatch.endpoint",
-				() -> localstack.getEndpointOverride(CLOUDWATCH).toString());
+		registry.add("spring.cloud.aws.cloudwatch.endpoint", () -> localstack.getEndpoint().toString());
 	}
 
 	@Test
