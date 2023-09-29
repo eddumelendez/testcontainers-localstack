@@ -53,7 +53,7 @@ class S3ApplicationTests {
 
 		this.s3Template.store("conferences", "javaone.txt", "Las Vegas");
 		ListObjectsV2Response listConferencesObjectsV2Response = this.s3Client
-				.listObjectsV2(ListObjectsV2Request.builder().bucket("conferences").build());
+			.listObjectsV2(ListObjectsV2Request.builder().bucket("conferences").build());
 		assertThat(listConferencesObjectsV2Response.contents()).hasSize(1);
 
 		this.s3Template.createBucket("talks");
@@ -61,7 +61,7 @@ class S3ApplicationTests {
 
 		this.s3Template.store("talks", "Adopting Testcontainers for local development.txt", "Oleg Šelajev");
 		ListObjectsV2Response listTalksObjectsV2Response = this.s3Client
-				.listObjectsV2(ListObjectsV2Request.builder().bucket("talks").build());
+			.listObjectsV2(ListObjectsV2Request.builder().bucket("talks").build());
 		assertThat(listTalksObjectsV2Response.contents()).hasSize(1);
 	}
 

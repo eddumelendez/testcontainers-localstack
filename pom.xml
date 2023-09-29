@@ -12,6 +12,7 @@
 
     <modules>
         <module>cloudwatch</module>
+        <module>lambda</module>
         <module>parameterstore</module>
         <module>s3</module>
         <module>secretsmanager</module>
@@ -23,7 +24,7 @@
             <plugin>
                 <groupId>io.spring.javaformat</groupId>
                 <artifactId>spring-javaformat-maven-plugin</artifactId>
-                <version>0.0.35</version>
+                <version>0.0.39</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>

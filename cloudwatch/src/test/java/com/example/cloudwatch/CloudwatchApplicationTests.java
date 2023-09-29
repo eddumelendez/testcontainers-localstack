@@ -63,21 +63,37 @@ class CloudwatchApplicationTests {
 		Dimension outcome = Dimension.builder().name("outcome").value("SUCCESS").build();
 		Dimension uri = Dimension.builder().name("uri").value("/greetings").build();
 		Dimension status = Dimension.builder().name("status").value("200").build();
-		Metric metric = Metric.builder().namespace("tc-localstack").metricName("http.server.requests.count")
-				.dimensions(error, exception, method, outcome, uri, status).build();
-		MetricStat metricStat = MetricStat.builder().stat("Maximum").metric(metric).unit(StandardUnit.COUNT).period(5)
-				.build();
-		MetricDataQuery metricDataQuery = MetricDataQuery.builder().metricStat(metricStat).id("test1").returnData(true)
-				.build();
-		await().atMost(Duration.ofSeconds(20)).pollInterval(Duration.ofSeconds(5)).ignoreExceptions()
-				.untilAsserted(() -> {
-					GetMetricDataResponse response = this.cloudWatchAsyncClient.getMetricData(GetMetricDataRequest
-							.builder().startTime(startTime).endTime(endTime).metricDataQueries(metricDataQuery).build())
-							.get();
-					assertThat(response.metricDataResults()).hasSize(1);
-					assertThat(response.metricDataResults().get(0).label()).isEqualTo("http.server.requests.count");
-					assertThat(response.metricDataResults().get(0).values()).contains(5d);
-				});
+		Metric metric = Metric.builder()
+			.namespace("tc-localstack")
+			.metricName("http.server.requests.count")
+			.dimensions(error, exception, method, outcome, uri, status)
+			.build();
+		MetricStat metricStat = MetricStat.builder()
+			.stat("Maximum")
+			.metric(metric)
+			.unit(StandardUnit.COUNT)
+			.period(5)
+			.build();
+		MetricDataQuery metricDataQuery = MetricDataQuery.builder()
+			.metricStat(metricStat)
+			.id("test1")
+			.returnData(true)
+			.build();
+		await().atMost(Duration.ofSeconds(20))
+			.pollInterval(Duration.ofSeconds(5))
+			.ignoreExceptions()
+			.untilAsserted(() -> {
+				GetMetricDataResponse response = this.cloudWatchAsyncClient
+					.getMetricData(GetMetricDataRequest.builder()
+						.startTime(startTime)
+						.endTime(endTime)
+						.metricDataQueries(metricDataQuery)
+						.build())
+					.get();
+				assertThat(response.metricDataResults()).hasSize(1);
+				assertThat(response.metricDataResults().get(0).label()).isEqualTo("http.server.requests.count");
+				assertThat(response.metricDataResults().get(0).values()).contains(5d);
+			});
 	}
 
 }
