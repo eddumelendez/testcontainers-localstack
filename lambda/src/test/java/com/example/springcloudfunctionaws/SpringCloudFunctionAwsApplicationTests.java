@@ -1,5 +1,6 @@
 package com.example.springcloudfunctionaws;
 
+import io.restassured.RestAssured;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -113,16 +114,18 @@ class SpringCloudFunctionAwsApplicationTests {
 		var waiterResponse = lambdaClient.waiter()
 			.waitUntilFunctionActive(GetFunctionConfigurationRequest.builder().functionName(fnName).build());
 
-		var invokeRequest = InvokeRequest.builder()
+		var createFunctionUrlConfigRequest = CreateFunctionUrlConfigRequest.builder()
 			.functionName(fnName)
-			.invocationType(InvocationType.REQUEST_RESPONSE)
-			.payload(SdkBytes.fromUtf8String("""
-					{"name": "profile"}
-					"""))
+			.authType(FunctionUrlAuthType.NONE)
 			.build();
+		var createFunctionUrlConfigResponse = lambdaClient.createFunctionUrlConfig(createFunctionUrlConfigRequest);
 
-		var payload = lambdaClient.invoke(invokeRequest).payload();
-		assertThat(payload.asUtf8String()).contains("4");
+		var functionUrl = createFunctionUrlConfigResponse.functionUrl()
+			.replace("" + 4566, "" + localstack.getMappedPort(4566));
+		var body = RestAssured.given().body("""
+				{"name": "profile"}
+				""").get(functionUrl).prettyPeek().andReturn().body();
+		assertThat(body.asString()).isEqualTo("4");
 	}
 
 }
