@@ -19,9 +19,7 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-				"spring.cloud.aws.region.static=us-east-1" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class S3ApplicationTests {
 
@@ -37,8 +35,10 @@ class S3ApplicationTests {
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.s3.endpoint", () -> localstack.getEndpoint().toString());
-		registry.add("spring.cloud.aws.s3.region", localstack::getRegion);
+		registry.add("spring.cloud.aws.credentials.access-key", localstack::getAccessKey);
+		registry.add("spring.cloud.aws.credentials.secret-key", localstack::getSecretKey);
+		registry.add("spring.cloud.aws.endpoint", localstack::getEndpoint);
+		registry.add("spring.cloud.aws.region.static", localstack::getRegion);
 	}
 
 	@BeforeAll
