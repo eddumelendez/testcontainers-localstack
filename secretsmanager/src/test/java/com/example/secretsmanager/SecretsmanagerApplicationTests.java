@@ -24,7 +24,7 @@ class SecretsmanagerApplicationTests {
 
 	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:2.3.0"));
+			DockerImageName.parse("localstack/localstack:2.3.2"));
 
 	@LocalServerPort
 	private int localPort;

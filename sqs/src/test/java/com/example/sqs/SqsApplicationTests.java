@@ -28,7 +28,7 @@ class SqsApplicationTests {
 
 	@Container
 	static LocalStackContainer localStackContainer = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:2.3.0"));
+			DockerImageName.parse("localstack/localstack:2.3.2"));
 
 	@DynamicPropertySource
 	static void registerProperties(DynamicPropertyRegistry registry) {

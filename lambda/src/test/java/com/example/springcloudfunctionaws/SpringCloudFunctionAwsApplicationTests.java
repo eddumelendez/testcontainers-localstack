@@ -48,7 +48,7 @@ class SpringCloudFunctionAwsApplicationTests {
 
 	@Container
 	static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:2.3.0"))
+			DockerImageName.parse("localstack/localstack:2.3.2"))
 		.withNetwork(network)
 		.withEnv("LAMBDA_DOCKER_NETWORK", ((Network.NetworkImpl) network).getName())
 		.withNetworkAliases("localstack")
