@@ -1,11 +1,14 @@
 package com.example.secretsmanager;
 
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,8 +20,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
 		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-				"spring.cloud.aws.region.static=us-east-1",
-				"spring.config.import=aws-secretsmanager:/spring/secret/text" })
+				"spring.cloud.aws.region.static=us-east-1" })
+@ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 @Testcontainers
 class SecretsmanagerApplicationTests {
 
@@ -31,19 +34,17 @@ class SecretsmanagerApplicationTests {
 
 	private static final String text = "This is not a secret anymore. Love testing AWS with Testcontainers and LocalStack.";
 
-	@BeforeAll
-	static void beforeAll() throws IOException, InterruptedException {
-		System.setProperty("spring.cloud.aws.secretsmanager.endpoint", localstack.getEndpoint().toString());
-		System.setProperty("spring.cloud.aws.secretsmanager.region", localstack.getRegion());
-
-		localstack.execInContainer("awslocal", "secretsmanager", "create-secret", "--name", "/spring/secret/text",
-				"--secret-string", text, "--region", localstack.getRegion());
+	@DynamicPropertySource
+	static void properties(DynamicPropertyRegistry registry) {
+		registry.add("spring.cloud.aws.secretsmanager.endpoint", () -> localstack.getEndpoint().toString());
+		registry.add("spring.cloud.aws.secretsmanager.region", localstack::getRegion);
+		registry.add("spring.config.import", () -> "aws-secretsmanager:/spring/secret/text");
 	}
 
-	@AfterAll
-	static void afterAll() {
-		System.clearProperty("spring.cloud.aws.secretsmanager.endpoint");
-		System.clearProperty("spring.cloud.aws.secretsmanager.region");
+	@BeforeAll
+	static void beforeAll() throws IOException, InterruptedException {
+		localstack.execInContainer("awslocal", "secretsmanager", "create-secret", "--name", "/spring/secret/text",
+				"--secret-string", text, "--region", localstack.getRegion());
 	}
 
 	@Test
