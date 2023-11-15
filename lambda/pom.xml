@@ -19,7 +19,7 @@
 		<wrapper.version>1.0.29.RELEASE</wrapper.version>
 		<aws.java.sdk.version>2.20.80</aws.java.sdk.version>
 		<spring-cloud-function.version>4.0.4</spring-cloud-function.version>
-		<testcontainers.version>1.19.1</testcontainers.version>
+		<testcontainers.version>1.19.2</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
