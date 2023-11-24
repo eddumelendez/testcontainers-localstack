@@ -48,7 +48,7 @@ class SpringCloudFunctionAwsApplicationTests {
 
 	@Container
 	static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:3.0.0"))
+			DockerImageName.parse("localstack/localstack:3.0.1"))
 		.withNetwork(network)
 		.withEnv("LOCALSTACK_HOST", "localhost.localstack.cloud")
 		.withEnv("LAMBDA_DOCKER_NETWORK", ((Network.NetworkImpl) network).getName())
@@ -93,7 +93,7 @@ class SpringCloudFunctionAwsApplicationTests {
 				Map.entry("SPRING_DATASOURCE_USERNAME", "test"), Map.entry("SPRING_DATASOURCE_PASSWORD", "test"));
 		var createFunctionRequest = CreateFunctionRequest.builder()
 			.functionName(fnName)
-			.runtime(Runtime.JAVA17)
+			.runtime(Runtime.JAVA21)
 			.role("arn:aws:iam::123456789012:role/irrelevant")
 			.packageType(PackageType.ZIP)
 			.code(FunctionCode.builder()
