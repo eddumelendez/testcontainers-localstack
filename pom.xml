@@ -12,6 +12,7 @@
 
     <modules>
         <module>cloudwatch</module>
+        <module>cognito</module>
         <module>lambda</module>
         <module>parameterstore</module>
         <module>s3</module>
