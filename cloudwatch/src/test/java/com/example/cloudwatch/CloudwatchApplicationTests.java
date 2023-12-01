@@ -35,7 +35,7 @@ class CloudwatchApplicationTests {
 
 	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:3.0.1"));
+			DockerImageName.parse("localstack/localstack:3.0.2"));
 
 	@Autowired
 	private CloudWatchAsyncClient cloudWatchAsyncClient;
