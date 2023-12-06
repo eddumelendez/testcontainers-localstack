@@ -18,7 +18,6 @@
 		<spring-cloud.version>2022.0.4</spring-cloud.version>
 		<wrapper.version>1.0.29.RELEASE</wrapper.version>
 		<aws.java.sdk.version>2.21.24</aws.java.sdk.version>
-		<spring-cloud-function.version>4.0.4</spring-cloud-function.version>
 		<testcontainers.version>1.19.3</testcontainers.version>
 	</properties>
 	<dependencies>
@@ -115,7 +114,7 @@
 					<dependency>
 						<groupId>org.springframework.boot.experimental</groupId>
 						<artifactId>spring-boot-thin-layout</artifactId>
-						<version>1.0.29.RELEASE</version>
+						<version>${wrapper.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
