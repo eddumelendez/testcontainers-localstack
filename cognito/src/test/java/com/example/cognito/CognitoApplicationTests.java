@@ -1,5 +1,6 @@
 package com.example.cognito;
 
+import com.github.dockerjava.api.command.InspectContainerResponse;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -10,7 +11,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -36,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class CognitoApplicationTests {
 
 	@Container
-	private static final LocalStackContainer localstack = new LocalStackContainer(
+	private static final LocalStackContainer localstack = (LocalStackContainer) new LocalStackContainer(
 			DockerImageName.parse("localstack/localstack-pro:3.0.2"))
 		.withEnv("SERVICES", "cognito-idp")
 		.withEnv("LOCALSTACK_API_KEY", System.getenv("LOCALSTACK_API_KEY"));
@@ -60,16 +61,17 @@ class CognitoApplicationTests {
 			.endpointOverride(localstack.getEndpoint())
 			.build();
 
-		var userPoolResponse = cognitoClient.createUserPool(CreateUserPoolRequest.builder()
-			.poolName("awspring-test")
-			.build());
+		var userPoolResponse = cognitoClient
+			.createUserPool(CreateUserPoolRequest.builder().poolName("awspring-test").build());
 		userPoolId = userPoolResponse.userPool().id();
 
 		var userPoolClientResponse = cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
 			.clientName("awspring-test-client")
 			.userPoolId(userPoolId)
+			.generateSecret(true)
 			.build());
 		appClientId = userPoolClientResponse.userPoolClient().clientId();
+		var appsecret = userPoolClientResponse.userPoolClient().clientSecret();
 
 		cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
 			.userPoolId(userPoolId)
@@ -89,10 +91,8 @@ class CognitoApplicationTests {
 
 	@DynamicPropertySource
 	static void dynamicProperties(DynamicPropertyRegistry registry) {
-		// registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () ->
-		// localstack.getEndpoint() + "/" + userPoolId);
-		registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri",
-				() -> localstack.getEndpoint() + "/" + userPoolId + "/.well-known/jwks.json");
+		registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri",
+				() -> "http://localhost.localstack.cloud:" + localstack.getMappedPort(4566) + "/" + userPoolId);
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class CognitoApplicationTests {
 		assertThat(unsecuredResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		assertThatExceptionOfType(HttpClientErrorException.Unauthorized.class)
-				.isThrownBy(() -> restClient.get().uri("/topsecret").retrieve().toBodilessEntity());
+			.isThrownBy(() -> restClient.get().uri("/topsecret").retrieve().toBodilessEntity());
 
 		var securedResponse = restClient.get()
 			.uri("/topsecret")
@@ -113,6 +113,29 @@ class CognitoApplicationTests {
 			.retrieve()
 			.toBodilessEntity();
 		assertThat(securedResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	static class LocalStackContainer extends org.testcontainers.containers.localstack.LocalStackContainer {
+
+		private static final String STARTER_SCRIPT = "/testcontainers_start.sh";
+
+		public LocalStackContainer(DockerImageName dockerImageName) {
+			super(dockerImageName);
+			withEnv("SERVICES", "cognito-idp");
+			withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("sh"));
+			setCommand("-c", "while [ ! -f " + STARTER_SCRIPT + " ]; do sleep 0.1; done; " + STARTER_SCRIPT);
+		}
+
+		@Override
+		protected void containerIsStarting(InspectContainerResponse containerInfo) {
+			var command = """
+					#!/bin/bash
+					export LOCALSTACK_HOST=:%d
+					/usr/local/bin/docker-entrypoint.sh
+					""".formatted(getMappedPort(4566));
+			copyFileToContainer(Transferable.of(command, 0777), STARTER_SCRIPT);
+		}
+
 	}
 
 }
