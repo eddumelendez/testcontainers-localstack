@@ -60,9 +60,8 @@ class CognitoApplicationTests {
 			.endpointOverride(localstack.getEndpoint())
 			.build();
 
-		var userPoolResponse = cognitoClient.createUserPool(CreateUserPoolRequest.builder()
-			.poolName("awspring-test")
-			.build());
+		var userPoolResponse = cognitoClient
+			.createUserPool(CreateUserPoolRequest.builder().poolName("awspring-test").build());
 		userPoolId = userPoolResponse.userPool().id();
 
 		var userPoolClientResponse = cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
@@ -105,7 +104,7 @@ class CognitoApplicationTests {
 		assertThat(unsecuredResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		assertThatExceptionOfType(HttpClientErrorException.Unauthorized.class)
-				.isThrownBy(() -> restClient.get().uri("/topsecret").retrieve().toBodilessEntity());
+			.isThrownBy(() -> restClient.get().uri("/topsecret").retrieve().toBodilessEntity());
 
 		var securedResponse = restClient.get()
 			.uri("/topsecret")
