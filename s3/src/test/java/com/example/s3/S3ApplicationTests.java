@@ -5,8 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -24,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class S3ApplicationTests {
 
 	@Container
+	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
 			DockerImageName.parse("localstack/localstack:3.3.0"));
 
@@ -32,14 +32,6 @@ class S3ApplicationTests {
 
 	@Autowired
 	private S3Client s3Client;
-
-	@DynamicPropertySource
-	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.credentials.access-key", localstack::getAccessKey);
-		registry.add("spring.cloud.aws.credentials.secret-key", localstack::getSecretKey);
-		registry.add("spring.cloud.aws.endpoint", localstack::getEndpoint);
-		registry.add("spring.cloud.aws.region.static", localstack::getRegion);
-	}
 
 	@BeforeAll
 	static void beforeAll() throws IOException, InterruptedException {

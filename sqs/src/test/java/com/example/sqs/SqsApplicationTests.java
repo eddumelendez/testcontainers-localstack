@@ -7,9 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -21,19 +20,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(properties = { "spring.cloud.aws.credentials.access-key=noop",
-		"spring.cloud.aws.credentials.secret-key=noop", "spring.cloud.aws.region.static=us-east-1" })
+@SpringBootTest
 @Testcontainers
 class SqsApplicationTests {
 
 	@Container
+	@ServiceConnection
 	static LocalStackContainer localStackContainer = new LocalStackContainer(
 			DockerImageName.parse("localstack/localstack:3.3.0"));
-
-	@DynamicPropertySource
-	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.sqs.endpoint", () -> localStackContainer.getEndpoint().toString());
-	}
 
 	@Autowired
 	private SqsTemplate sqsTemplate;

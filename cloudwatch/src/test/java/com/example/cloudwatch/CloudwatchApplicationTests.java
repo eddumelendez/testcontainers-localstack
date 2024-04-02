@@ -7,8 +7,7 @@ import org.springframework.boot.test.autoconfigure.actuate.observability.AutoCon
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -24,9 +23,7 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = { "spring.cloud.aws.credentials.access-key=noop", "spring.cloud.aws.credentials.secret-key=noop",
-				"spring.cloud.aws.region.static=us-east-1",
-				"management.cloudwatch.metrics.export.namespace=tc-localstack",
+		properties = { "management.cloudwatch.metrics.export.namespace=tc-localstack",
 				"management.cloudwatch.metrics.export.step=5s", "management.metrics.enable.all=false",
 				"management.metrics.enable.http=true" })
 @AutoConfigureObservability(tracing = false)
@@ -34,6 +31,7 @@ import static org.hamcrest.Matchers.equalTo;
 class CloudwatchApplicationTests {
 
 	@Container
+	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
 			DockerImageName.parse("localstack/localstack:3.3.0"));
 
@@ -42,11 +40,6 @@ class CloudwatchApplicationTests {
 
 	@LocalServerPort
 	private int localPort;
-
-	@DynamicPropertySource
-	static void registerProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cloud.aws.cloudwatch.endpoint", () -> localstack.getEndpoint().toString());
-	}
 
 	@Test
 	void contextLoads() {
