@@ -17,6 +17,7 @@
         <module>parameterstore</module>
         <module>s3</module>
         <module>secretsmanager</module>
+        <module>ses</module>
         <module>sqs</module>
     </modules>
 
