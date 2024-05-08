@@ -7,14 +7,12 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
-import org.testcontainers.DockerClientFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
-import org.testcontainers.utility.ResourceReaper;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.SdkBytes;
@@ -29,9 +27,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,17 +47,7 @@ class SpringCloudFunctionAwsApplicationTests {
 		.withNetwork(network)
 		.withEnv("LOCALSTACK_HOST", "localhost.localstack.cloud")
 		.withEnv("LAMBDA_DOCKER_NETWORK", ((Network.NetworkImpl) network).getName())
-		.withNetworkAliases("localstack")
-		.withEnv("LAMBDA_DOCKER_FLAGS", testcontainersLabels());
-
-	static String testcontainersLabels() {
-		return Stream
-			.of(DockerClientFactory.DEFAULT_LABELS.entrySet().stream(),
-					ResourceReaper.instance().getLabels().entrySet().stream())
-			.flatMap(Function.identity())
-			.map(entry -> String.format("-l %s=%s", entry.getKey(), entry.getValue()))
-			.collect(Collectors.joining(" "));
-	}
+		.withNetworkAliases("localstack");
 
 	static String buildJar() {
 		try {
