@@ -25,7 +25,7 @@ class S3ApplicationTests {
 	@Container
 	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:3.4.0"));
+			DockerImageName.parse("localstack/localstack:3.5.0"));
 
 	@Autowired
 	private S3Template s3Template;
