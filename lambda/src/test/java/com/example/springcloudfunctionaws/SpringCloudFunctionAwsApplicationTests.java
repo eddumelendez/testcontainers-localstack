@@ -79,6 +79,7 @@ class SpringCloudFunctionAwsApplicationTests {
 
 	@Test
 	void contextLoads() throws IOException {
+		// Setup for lambda
 		var fnName = "uppercase-fn";
 		var envVars = Map.ofEntries(Map.entry("SPRING_DATASOURCE_URL", "jdbc:postgresql://postgres:5432/test"),
 				Map.entry("SPRING_DATASOURCE_USERNAME", "test"), Map.entry("SPRING_DATASOURCE_PASSWORD", "test"));
@@ -95,6 +96,7 @@ class SpringCloudFunctionAwsApplicationTests {
 			.environment(Environment.builder().variables(envVars).build())
 			.build();
 
+		// Lambda client pointing to LocalStack
 		var lambdaClient = LambdaClient.builder()
 			.region(Region.of(localstack.getRegion()))
 			.credentialsProvider(StaticCredentialsProvider
@@ -102,18 +104,21 @@ class SpringCloudFunctionAwsApplicationTests {
 			.endpointOverride(localstack.getEndpoint())
 			.build();
 
+		// Create a function and wait for it to be active
 		var createFunctionResponse = lambdaClient.createFunction(createFunctionRequest);
 		var waiterResponse = lambdaClient.waiter()
 			.waitUntilFunctionActive(GetFunctionConfigurationRequest.builder().functionName(fnName).build());
 
+		// Create a URL for the function and replace it 4566 by the random port
 		var createFunctionUrlConfigRequest = CreateFunctionUrlConfigRequest.builder()
 			.functionName(fnName)
 			.authType(FunctionUrlAuthType.NONE)
 			.build();
 		var createFunctionUrlConfigResponse = lambdaClient.createFunctionUrlConfig(createFunctionUrlConfigRequest);
-
 		var functionUrl = createFunctionUrlConfigResponse.functionUrl()
 			.replace("" + 4566, "" + localstack.getMappedPort(4566));
+
+		// Test the function
 		var body = RestAssured.given().body("""
 				{"name": "profile"}
 				""").get(functionUrl).prettyPeek().andReturn().body();
