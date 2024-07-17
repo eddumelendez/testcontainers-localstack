@@ -16,6 +16,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<awssdk-v2.version>2.17.189</awssdk-v2.version>
+		<testcontainers.version>1.20.0</testcontainers.version>
 	</properties>
 	<dependencies>
 		<dependency>
