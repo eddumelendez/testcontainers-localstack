@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>api-gateway</module>
         <module>cloudwatch</module>
         <module>cognito</module>
         <module>lambda</module>
