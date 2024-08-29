@@ -33,7 +33,7 @@ class SqsApplicationTests {
 	@Container
 	@ServiceConnection
 	static LocalStackContainer localStackContainer = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:3.6.0"));
+			DockerImageName.parse("localstack/localstack:3.7.0"));
 
 	@Autowired
 	private SqsTemplate sqsTemplate;
@@ -72,11 +72,14 @@ class SqsApplicationTests {
 	}
 
 	static class SqsAfterAllCallBack implements AfterAllCallback {
+
 		@Override
 		public void afterAll(ExtensionContext context) throws Exception {
-			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) SpringExtension.getApplicationContext(context);
+			ConfigurableApplicationContext applicationContext = (ConfigurableApplicationContext) SpringExtension
+				.getApplicationContext(context);
 			applicationContext.stop();
 		}
+
 	}
 
 }
