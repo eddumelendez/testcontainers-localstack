@@ -2,19 +2,21 @@ package org.example.snowflake;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Properties;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest(properties = { "spring.datasource.username=test", "spring.datasource.password=test",
+		"spring.datasource.driver-class-name=net.snowflake.client.jdbc.SnowflakeDriver", })
 @Testcontainers
 @EnabledIfEnvironmentVariable(named = "LOCALSTACK_AUTH_TOKEN", matches = ".+")
 public class SnowflakeTest {
@@ -25,23 +27,25 @@ public class SnowflakeTest {
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"))
 		.waitingFor(Wait.forLogMessage(".*Ready.*", 1));
 
-	@Test
-	void test() throws Exception {
-		String url = "jdbc:snowflake://snowflake.localhost.localstack.cloud:" + container.getMappedPort(4566);
-		Properties prop = new Properties();
-		prop.put("user", "test");
-		prop.put("password", "test");
-		prop.put("account", "test");
-		prop.put("database", "test");
+	@DynamicPropertySource
+	static void setProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url",
+				() -> "jdbc:snowflake://snowflake.localhost.localstack.cloud:" + container.getMappedPort(4566));
+	}
 
-		try (Connection conn = DriverManager.getConnection(url, prop)) {
-			Statement stat = conn.createStatement();
-			stat.execute("create table profile (name VARCHAR(25) NOT NULL PRIMARY KEY)");
-			stat.execute("insert into profile (name) values ('test')");
-			ResultSet res = stat.executeQuery("select name from profile");
-			res.next();
-			assertThat(res.getString(1)).isEqualTo("test");
-		}
+	@Autowired
+	private JdbcClient jdbcClient;
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Test
+	void test() {
+		this.jdbcTemplate.execute("create table profile (name VARCHAR(25) NOT NULL PRIMARY KEY)");
+		this.jdbcTemplate.execute("insert into profile (name) values ('test')");
+
+		String name = this.jdbcClient.sql("select name from profile").query(String.class).single();
+		assertThat(name).isEqualTo("test");
 	}
 
 }
