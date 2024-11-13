@@ -19,6 +19,7 @@
         <module>s3</module>
         <module>secretsmanager</module>
         <module>ses</module>
+        <module>snowflake</module>
         <module>sqs</module>
     </modules>
 
