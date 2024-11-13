@@ -32,14 +32,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
-@EnabledIfEnvironmentVariable(named = "LOCALSTACK_API_KEY", matches = ".+")
+@EnabledIfEnvironmentVariable(named = "LOCALSTACK_AUTH_TOKEN", matches = ".+")
 class CognitoApplicationTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:3.0.2"))
+			DockerImageName.parse("localstack/localstack-pro:3.8.1"))
 		.withEnv("SERVICES", "cognito-idp")
-		.withEnv("LOCALSTACK_API_KEY", System.getenv("LOCALSTACK_API_KEY"));
+		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
 	private static String userPoolId;
 
