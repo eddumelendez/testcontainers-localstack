@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -29,21 +28,15 @@ public class SnowflakeTest {
 
 	@DynamicPropertySource
 	static void setProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url",
-				() -> "jdbc:snowflake://snowflake.localhost.localstack.cloud:" + container.getMappedPort(4566));
+		registry.add("spring.datasource.url", () -> "jdbc:snowflake://snowflake.localhost.localstack.cloud:"
+				+ container.getMappedPort(4566) + "/?db=test&schema=test&JDBC_QUERY_RESULT_FORMAT=JSON");
 	}
 
 	@Autowired
 	private JdbcClient jdbcClient;
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
 	@Test
 	void test() {
-		this.jdbcTemplate.execute("create table profile (name VARCHAR(25) NOT NULL PRIMARY KEY)");
-		this.jdbcTemplate.execute("insert into profile (name) values ('test')");
-
 		String name = this.jdbcClient.sql("select name from profile").query(String.class).single();
 		assertThat(name).isEqualTo("test");
 	}
