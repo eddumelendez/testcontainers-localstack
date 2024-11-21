@@ -33,7 +33,7 @@ class SqsApplicationTests {
 	@Container
 	@ServiceConnection
 	static LocalStackContainer localStackContainer = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:3.8.1"));
+			DockerImageName.parse("localstack/localstack:4.0.0"));
 
 	@Autowired
 	private SqsTemplate sqsTemplate;
