@@ -37,7 +37,7 @@ class CognitoApplicationTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:3.8.1"))
+			DockerImageName.parse("localstack/localstack-pro:4.1.0"))
 		.withEnv("SERVICES", "cognito-idp")
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
@@ -54,36 +54,37 @@ class CognitoApplicationTests {
 	static void beforeAll() {
 		var credentialsProvider = StaticCredentialsProvider
 			.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey()));
-		var cognitoClient = CognitoIdentityProviderClient.builder()
+		try (var cognitoClient = CognitoIdentityProviderClient.builder()
 			.credentialsProvider(credentialsProvider)
 			.region(Region.of(localstack.getRegion()))
 			.endpointOverride(localstack.getEndpoint())
-			.build();
+			.build()) {
 
-		var userPoolResponse = cognitoClient
-			.createUserPool(CreateUserPoolRequest.builder().poolName("awspring-test").build());
-		userPoolId = userPoolResponse.userPool().id();
+			var userPoolResponse = cognitoClient
+				.createUserPool(CreateUserPoolRequest.builder().poolName("awspring-test").build());
+			userPoolId = userPoolResponse.userPool().id();
 
-		var userPoolClientResponse = cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
-			.clientName("awspring-test-client")
-			.userPoolId(userPoolId)
-			.build());
-		appClientId = userPoolClientResponse.userPoolClient().clientId();
+			var userPoolClientResponse = cognitoClient.createUserPoolClient(CreateUserPoolClientRequest.builder()
+				.clientName("awspring-test-client")
+				.userPoolId(userPoolId)
+				.build());
+			appClientId = userPoolClientResponse.userPoolClient().clientId();
 
-		cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
-			.userPoolId(userPoolId)
-			.username("testuser@test.com")
-			.temporaryPassword("testP@ssw0rd")
-			.userAttributes(AttributeType.builder().name("email").value("testuser@test.com").build(),
-					AttributeType.builder().name("email_verified").value("true").build())
-			.build());
+			cognitoClient.adminCreateUser(AdminCreateUserRequest.builder()
+				.userPoolId(userPoolId)
+				.username("testuser@test.com")
+				.temporaryPassword("testP@ssw0rd")
+				.userAttributes(AttributeType.builder().name("email").value("testuser@test.com").build(),
+						AttributeType.builder().name("email_verified").value("true").build())
+				.build());
 
-		var initiateAuthResponse = cognitoClient.initiateAuth(InitiateAuthRequest.builder()
-			.authFlow(AuthFlowType.USER_PASSWORD_AUTH)
-			.clientId(appClientId)
-			.authParameters(Map.of("USERNAME", "testuser@test.com", "PASSWORD", "testP@ssw0rd"))
-			.build());
-		accessToken = initiateAuthResponse.authenticationResult().accessToken();
+			var initiateAuthResponse = cognitoClient.initiateAuth(InitiateAuthRequest.builder()
+				.authFlow(AuthFlowType.USER_PASSWORD_AUTH)
+				.clientId(appClientId)
+				.authParameters(Map.of("USERNAME", "testuser@test.com", "PASSWORD", "testP@ssw0rd"))
+				.build());
+			accessToken = initiateAuthResponse.authenticationResult().accessToken();
+		}
 	}
 
 	@DynamicPropertySource

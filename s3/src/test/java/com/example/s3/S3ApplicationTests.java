@@ -35,7 +35,7 @@ class S3ApplicationTests {
 	@Container
 	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.0.3"));
+			DockerImageName.parse("localstack/localstack:4.1.0"));
 
 	@Autowired
 	private S3Template s3Template;
@@ -61,18 +61,19 @@ class S3ApplicationTests {
 	static void beforeAll() throws IOException, InterruptedException {
 		localstack.execInContainer("awslocal", "s3api", "create-bucket", "--bucket", "conferences", "--region",
 				localstack.getRegion());
-		var sqsClient = SqsClient.builder()
+		try (var sqsClient = SqsClient.builder()
 			.region(Region.of(localstack.getRegion()))
 			.credentialsProvider(StaticCredentialsProvider
 				.create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
 			.endpointOverride(localstack.getEndpoint())
-			.build();
-		var queue = sqsClient.createQueue(builder -> builder.queueName("s3-event-notification-queue"));
-		var queueAttributes = sqsClient
-			.getQueueAttributes(builder -> builder.queueUrl(queue.queueUrl()).attributeNamesWithStrings("QueueArn"));
-		var queueArn = queueAttributes.attributesAsStrings().get("QueueArn");
-		localstack.execInContainer("awslocal", "s3api", "put-bucket-notification-configuration", "--bucket",
-				"conferences", "--notification-configuration", String.format(POLICY, queueArn));
+			.build()) {
+			var queue = sqsClient.createQueue(builder -> builder.queueName("s3-event-notification-queue"));
+			var queueAttributes = sqsClient
+				.getQueueAttributes(builder -> builder.queueUrl(queue.queueUrl()).attributeNamesWithStrings("QueueArn"));
+			var queueArn = queueAttributes.attributesAsStrings().get("QueueArn");
+			localstack.execInContainer("awslocal", "s3api", "put-bucket-notification-configuration", "--bucket",
+					"conferences", "--notification-configuration", String.format(POLICY, queueArn));
+		}
 	}
 
 	@Test
