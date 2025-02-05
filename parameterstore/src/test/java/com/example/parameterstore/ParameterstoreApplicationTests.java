@@ -31,7 +31,7 @@ class ParameterstoreApplicationTests {
 
 	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.1.0"));
+			DockerImageName.parse("localstack/localstack:4.1.1"));
 
 	@DynamicPropertySource
 	static void properties(DynamicPropertyRegistry registry) {
