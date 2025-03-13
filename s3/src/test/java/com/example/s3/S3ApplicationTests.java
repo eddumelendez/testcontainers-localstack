@@ -68,8 +68,8 @@ class S3ApplicationTests {
 			.endpointOverride(localstack.getEndpoint())
 			.build()) {
 			var queue = sqsClient.createQueue(builder -> builder.queueName("s3-event-notification-queue"));
-			var queueAttributes = sqsClient
-				.getQueueAttributes(builder -> builder.queueUrl(queue.queueUrl()).attributeNamesWithStrings("QueueArn"));
+			var queueAttributes = sqsClient.getQueueAttributes(
+					builder -> builder.queueUrl(queue.queueUrl()).attributeNamesWithStrings("QueueArn"));
 			var queueArn = queueAttributes.attributesAsStrings().get("QueueArn");
 			localstack.execInContainer("awslocal", "s3api", "put-bucket-notification-configuration", "--bucket",
 					"conferences", "--notification-configuration", String.format(POLICY, queueArn));
