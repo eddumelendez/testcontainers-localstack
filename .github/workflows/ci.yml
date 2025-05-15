@@ -53,3 +53,4 @@ jobs:
         run: ./mvnw -V -B verify -pl ${{ matrix.modules }}
         env:
           LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+          LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
