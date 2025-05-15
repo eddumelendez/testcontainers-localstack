@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SnowflakeTest {
 
 	@Container
-	private static final GenericContainer<?> container = new GenericContainer<>("localstack/snowflake:0.3.0")
+	private static final GenericContainer<?> container = new GenericContainer<>("localstack/snowflake:1.0.0")
 		.withExposedPorts(4566)
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"))
 		.waitingFor(Wait.forLogMessage(".*Ready.*", 1));
