@@ -14,7 +14,7 @@
 	<name>snowflake</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<testcontainers.version>1.21.3</testcontainers.version>
 	</properties>
 	<dependencies>
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>net.snowflake</groupId>
 			<artifactId>snowflake-jdbc</artifactId>
-			<version>3.20.0</version>
+			<version>3.26.1</version>
 			<scope>runtime</scope>
 		</dependency>
 

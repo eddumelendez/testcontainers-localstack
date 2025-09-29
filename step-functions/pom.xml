@@ -14,7 +14,7 @@
 	<name>step-functions</name>
 	<description>Demo project for Step Functions with LocalStack</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<testcontainers.version>1.21.3</testcontainers.version>
 		<aws-java-sdk-v2.version>2.29.34</aws-java-sdk-v2.version>
 	</properties>
@@ -28,6 +28,12 @@
 		<dependency>
 			<groupId>software.amazon.awssdk</groupId>
 			<artifactId>iam</artifactId>
+			<version>${aws-java-sdk-v2.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>cloudformation</artifactId>
 			<version>${aws-java-sdk-v2.version}</version>
 			<scope>test</scope>
 		</dependency>
