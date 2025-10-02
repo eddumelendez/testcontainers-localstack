@@ -8,6 +8,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.awscore.AwsRequestOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.mq.MqClient;
 import software.amazon.awssdk.services.mq.model.BrokerState;
@@ -38,7 +39,7 @@ public class MqBrokerTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:4.8.1"))
+			DockerImageName.parse("localstack/localstack-pro:4.9.0"))
 		.withExposedPorts(4566, 4510, 4511)
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
@@ -57,10 +58,12 @@ public class MqBrokerTests {
 			CreateBrokerRequest createBrokerRequest = CreateBrokerRequest.builder()
 				.brokerName("test-broker")
 				.engineType(EngineType.ACTIVEMQ)
-				.engineVersion("5.16.6")
-				.hostInstanceType("mq.t2.micro")
+				.engineVersion("5.18")
+				.hostInstanceType("mq.t3.micro")
 				.publiclyAccessible(true)
 				.users(adminUser)
+				.overrideConfiguration(
+						AwsRequestOverrideConfiguration.builder().apiCallAttemptTimeout(Duration.ofMinutes(3)).build())
 				.build();
 
 			CreateBrokerResponse createBrokerResponse = mqClient.createBroker(createBrokerRequest);

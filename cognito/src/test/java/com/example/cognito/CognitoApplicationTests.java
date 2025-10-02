@@ -19,6 +19,8 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminResetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
@@ -37,7 +39,7 @@ class CognitoApplicationTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:4.8.1"))
+			DockerImageName.parse("localstack/localstack-pro:4.9.0"))
 		.withEnv("SERVICES", "cognito-idp")
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
@@ -78,10 +80,22 @@ class CognitoApplicationTests {
 						AttributeType.builder().name("email_verified").value("true").build())
 				.build());
 
+			cognitoClient.adminResetUserPassword(AdminResetUserPasswordRequest.builder()
+				.username("testuser@test.com")
+				.userPoolId(userPoolId)
+				.build());
+
+			cognitoClient.adminSetUserPassword(AdminSetUserPasswordRequest.builder()
+				.username("testuser@test.com")
+				.password("testP4ssw*rd")
+				.userPoolId(userPoolId)
+				.permanent(Boolean.TRUE)
+				.build());
+
 			var initiateAuthResponse = cognitoClient.initiateAuth(InitiateAuthRequest.builder()
 				.authFlow(AuthFlowType.USER_PASSWORD_AUTH)
 				.clientId(appClientId)
-				.authParameters(Map.of("USERNAME", "testuser@test.com", "PASSWORD", "testP@ssw0rd"))
+				.authParameters(Map.of("USERNAME", "testuser@test.com", "PASSWORD", "testP4ssw*rd"))
 				.build());
 			accessToken = initiateAuthResponse.authenticationResult().accessToken();
 		}
