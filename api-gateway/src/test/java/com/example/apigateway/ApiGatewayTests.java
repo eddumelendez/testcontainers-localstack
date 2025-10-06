@@ -31,7 +31,7 @@ class ApiGatewayTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.9.1"));
+			DockerImageName.parse("localstack/localstack:4.9.2"));
 
 	@Test
 	void test() {

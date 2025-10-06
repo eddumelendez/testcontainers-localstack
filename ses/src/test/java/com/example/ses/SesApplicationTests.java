@@ -27,7 +27,7 @@ class SesApplicationTests {
 	@Container
 	@ServiceConnection
 	static LocalStackContainer localStackContainer = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.9.1"));
+			DockerImageName.parse("localstack/localstack:4.9.2"));
 
 	@Autowired
 	private MailSender mailSender;
