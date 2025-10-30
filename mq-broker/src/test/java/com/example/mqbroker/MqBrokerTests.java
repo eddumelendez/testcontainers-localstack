@@ -39,7 +39,7 @@ public class MqBrokerTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:4.9.2"))
+			DockerImageName.parse("localstack/localstack-pro:4.10.0"))
 		.withExposedPorts(4566, 4510, 4511)
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
