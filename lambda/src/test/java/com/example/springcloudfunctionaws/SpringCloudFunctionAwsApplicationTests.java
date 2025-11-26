@@ -85,7 +85,7 @@ class SpringCloudFunctionAwsApplicationTests {
 				Map.entry("SPRING_DATASOURCE_USERNAME", "test"), Map.entry("SPRING_DATASOURCE_PASSWORD", "test"));
 		var createFunctionRequest = CreateFunctionRequest.builder()
 			.functionName(fnName)
-			.runtime(Runtime.JAVA21)
+			.runtime(Runtime.JAVA25)
 			.role("arn:aws:iam::123456789012:role/irrelevant")
 			.packageType(PackageType.ZIP)
 			.code(FunctionCode.builder()

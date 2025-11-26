@@ -14,10 +14,10 @@
 	<name>lambda</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<spring-cloud.version>2025.0.0-RC1</spring-cloud.version>
 		<wrapper.version>1.0.29.RELEASE</wrapper.version>
-		<aws.java.sdk.version>2.26.20</aws.java.sdk.version>
+		<aws.java.sdk.version>2.39.3</aws.java.sdk.version>
 		<testcontainers.version>1.21.3</testcontainers.version>
 	</properties>
 	<dependencies>
