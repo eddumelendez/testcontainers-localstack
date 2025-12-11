@@ -39,7 +39,7 @@ class CognitoApplicationTests {
 
 	@Container
 	private static final LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack-pro:4.11.0"))
+			DockerImageName.parse("localstack/localstack-pro:4.12.0"))
 		.withEnv("SERVICES", "cognito-idp")
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
