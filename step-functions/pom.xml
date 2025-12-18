@@ -15,7 +15,7 @@
 	<description>Demo project for Step Functions with LocalStack</description>
 	<properties>
 		<java.version>25</java.version>
-		<testcontainers.version>1.21.3</testcontainers.version>
+		<testcontainers.version>1.21.4</testcontainers.version>
 		<aws-java-sdk-v2.version>2.29.34</aws-java-sdk-v2.version>
 	</properties>
 	<dependencies>
