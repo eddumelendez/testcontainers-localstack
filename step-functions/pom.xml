@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.9</version>
+		<version>4.0.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
@@ -15,7 +15,7 @@
 	<description>Demo project for Step Functions with LocalStack</description>
 	<properties>
 		<java.version>25</java.version>
-		<testcontainers.version>1.21.4</testcontainers.version>
+		<testcontainers.version>2.0.3</testcontainers.version>
 		<aws-java-sdk-v2.version>2.29.34</aws-java-sdk-v2.version>
 	</properties>
 	<dependencies>
@@ -45,12 +45,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.testcontainers</groupId>
-			<artifactId>localstack</artifactId>
+			<artifactId>testcontainers-localstack</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

@@ -8,10 +8,10 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Network;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.localstack.LocalStackContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -44,16 +44,15 @@ class SpringCloudFunctionAwsApplicationTests {
 	static Network network = Network.newNetwork();
 
 	@Container
-	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine").withNetwork(network)
+	static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:15-alpine").withNetwork(network)
 		.withNetworkAliases("postgres");
 
 	@Container
 	static LocalStackContainer localstack = new LocalStackContainer(
 			DockerImageName.parse("localstack/localstack:4.12.0"))
 		.withNetwork(network)
-		.withEnv("LOCALSTACK_HOST", "localhost.localstack.cloud")
 		.withEnv("LAMBDA_DOCKER_NETWORK", ((Network.NetworkImpl) network).getName())
-		.withNetworkAliases("localstack");
+			.withEnv("LS_LOG", "debug");
 
 	static String buildJar() {
 		try {

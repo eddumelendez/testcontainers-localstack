@@ -3,12 +3,12 @@ package com.example.cloudwatch;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.actuate.observability.AutoConfigureObservability;
+import org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -26,14 +26,14 @@ import static org.hamcrest.Matchers.equalTo;
 		properties = { "management.cloudwatch.metrics.export.namespace=tc-localstack",
 				"management.cloudwatch.metrics.export.step=5s", "management.metrics.enable.all=false",
 				"management.metrics.enable.http=true" })
-@AutoConfigureObservability(tracing = false)
+@AutoConfigureMetrics
 @Testcontainers
 class CloudwatchApplicationTests {
 
 	@Container
 	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.12.0"));
+			DockerImageName.parse("localstack/localstack:latest"));
 
 	@Autowired
 	private CloudWatchAsyncClient cloudWatchAsyncClient;
