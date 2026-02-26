@@ -34,7 +34,7 @@ class StepFunctionsTests {
 
 	@Container
 	static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.7.0"));
+			DockerImageName.parse("localstack/localstack:4.14.0"));
 
 	@Test
 	void createAndExecuteStateMachine() throws Exception {
