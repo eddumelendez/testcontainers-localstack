@@ -2,6 +2,7 @@ package com.example.cloudwatch;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.micrometer.metrics.test.autoconfigure.AutoConfigureMetrics;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,12 +29,14 @@ import static org.hamcrest.Matchers.equalTo;
 				"management.metrics.enable.http=true" })
 @AutoConfigureMetrics
 @Testcontainers
+@EnabledIfEnvironmentVariable(named = "LOCALSTACK_AUTH_TOKEN", matches = ".+")
 class CloudwatchApplicationTests {
 
 	@Container
 	@ServiceConnection
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:latest"));
+			DockerImageName.parse("localstack/localstack:2026.03.0"))
+		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
 	@Autowired
 	private CloudWatchAsyncClient cloudWatchAsyncClient;

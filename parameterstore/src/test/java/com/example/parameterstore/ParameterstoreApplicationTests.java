@@ -3,6 +3,7 @@ package com.example.parameterstore;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -24,6 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 				"spring.cloud.aws.region.static=us-east-1" })
 @ContextConfiguration(initializers = ConfigDataApplicationContextInitializer.class)
 @Testcontainers
+@EnabledIfEnvironmentVariable(named = "LOCALSTACK_AUTH_TOKEN", matches = ".+")
 class ParameterstoreApplicationTests {
 
 	@LocalServerPort
@@ -31,7 +33,8 @@ class ParameterstoreApplicationTests {
 
 	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.14.0"));
+			DockerImageName.parse("localstack/localstack:2026.03.0"))
+		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
 	@DynamicPropertySource
 	static void properties(DynamicPropertyRegistry registry) {

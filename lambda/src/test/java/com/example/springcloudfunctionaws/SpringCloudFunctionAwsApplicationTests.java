@@ -6,6 +6,7 @@ import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.util.StringUtils;
 import org.testcontainers.containers.Network;
 import org.testcontainers.junit.jupiter.Container;
@@ -37,6 +38,7 @@ import java.util.Properties;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
+@EnabledIfEnvironmentVariable(named = "LOCALSTACK_AUTH_TOKEN", matches = ".+")
 class SpringCloudFunctionAwsApplicationTests {
 
 	static String jar = buildJar();
@@ -49,10 +51,10 @@ class SpringCloudFunctionAwsApplicationTests {
 
 	@Container
 	static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:4.14.0"))
+			DockerImageName.parse("localstack/localstack:2026.03.0"))
 		.withNetwork(network)
 		.withEnv("LAMBDA_DOCKER_NETWORK", ((Network.NetworkImpl) network).getName())
-			.withEnv("LS_LOG", "debug");
+		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
 	static String buildJar() {
 		try {
