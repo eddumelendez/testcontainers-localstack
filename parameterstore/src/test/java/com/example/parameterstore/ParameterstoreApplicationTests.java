@@ -33,7 +33,7 @@ class ParameterstoreApplicationTests {
 
 	@Container
 	private static LocalStackContainer localstack = new LocalStackContainer(
-			DockerImageName.parse("localstack/localstack:2026.03.0"))
+			DockerImageName.parse("localstack/localstack:2026.04.0"))
 		.withEnv("LOCALSTACK_AUTH_TOKEN", System.getenv("LOCALSTACK_AUTH_TOKEN"));
 
 	@DynamicPropertySource
